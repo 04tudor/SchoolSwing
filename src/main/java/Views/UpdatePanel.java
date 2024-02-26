@@ -1,14 +1,30 @@
 package Views;
 
+import Models.DAO.DaoException;
+import Models.DAO.EntityInterfaces.GradesDAO;
+import Models.DAO.EntityInterfaces.GroupsDAO;
+import Models.DAO.EntityInterfaces.StudentsDAO;
+import Models.DAO.Implementation.GradesDAOImpl;
+import Models.DAO.Implementation.GroupsDAOImpl;
+import Models.DAO.Implementation.StudentsDAOImpl;
 import Models.Grades;
 import Models.Groups;
 import Models.Students;
+import Views.EditPanels.GradesEditPanel;
+import Views.EditPanels.GroupsEditPanel;
+import Views.EditPanels.StudentsEditPanel;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class UpdatePanel extends JPanel {
+    private final StudentsDAO studentsDAO;
+    private final GroupsDAO groupsDAO;
+    private final GradesDAO gradesDAO;
     public UpdatePanel() {
+        gradesDAO=new GradesDAOImpl();
+        groupsDAO=new GroupsDAOImpl();
+        studentsDAO=new StudentsDAOImpl();
         setLayout(new BorderLayout());
 
         JComboBox<String> comboBox = new JComboBox<>();
@@ -32,34 +48,42 @@ public class UpdatePanel extends JPanel {
             String selectedOption = (String) comboBox.getSelectedItem();
             switch (selectedOption) {
                 case "Students":
-                    updateStudent(textArea);
+                    try {
+                        updateStudent(textArea);
+                    } catch (DaoException ex) {
+                        ex.printStackTrace();
+                    }
                     break;
                 case "Groups":
-                    updateGroup(textArea);
+                    try {
+                        updateGroup(textArea);
+                    } catch (DaoException ex) {
+                        ex.printStackTrace();
+                    }
                     break;
                 case "Grades":
-                    updateGrade(textArea);
+                    try {
+                        updateGrade(textArea);
+                    } catch (DaoException ex) {
+                        ex.printStackTrace();
+                    }
                     break;
             }
         });
     }
 
-    private void updateStudent(JTextArea textArea) {
+    private void updateStudent(JTextArea textArea) throws DaoException {
         String codeStudent = JOptionPane.showInputDialog("Enter Code Student:");
         if (codeStudent != null && !codeStudent.isEmpty()) {
             Students student = fetchStudentByCode(codeStudent);
-
             if (student != null) {
-                Students studentsInputPanel = new Students();
-                studentsInputPanel.setCode_Student(student.getCode_Student());
-                studentsInputPanel.setName(student.getName());
-                studentsInputPanel.setSurname(student.getSurname());
-                studentsInputPanel.setGroups(student.getGroups());
-
-                int resultStudents = JOptionPane.showConfirmDialog(null, studentsInputPanel,
+                StudentsEditPanel studentsEditPanel = new StudentsEditPanel(student);
+                int result = JOptionPane.showConfirmDialog(null, studentsEditPanel,
                         "Update Student Information", JOptionPane.OK_CANCEL_OPTION);
-                if (resultStudents == JOptionPane.OK_OPTION) {
-                    textArea.append("Student updated: " + studentsInputPanel.toString() + "\n");
+                if (result == JOptionPane.OK_OPTION) {
+                    Students updatedStudent = studentsEditPanel.getupdatedStudent();
+                    studentsDAO.update(codeStudent, updatedStudent);
+                    textArea.append("Student updated: " + updatedStudent.toString() + "\n");
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "Student not found!");
@@ -67,15 +91,14 @@ public class UpdatePanel extends JPanel {
         }
     }
 
-    private void updateGroup(JTextArea textArea) {
+
+    private void updateGroup(JTextArea textArea) throws DaoException {
         String codeGroup = JOptionPane.showInputDialog("Enter Code Group:");
         if (codeGroup != null && !codeGroup.isEmpty()) {
             Groups group = fetchGroupByCode(codeGroup);
 
             if (group != null) {
-                Groups groupsinput = new Groups();
-                groupsinput.setCode_Group(group.getCode_Group());
-                groupsinput.setName(group.getName());
+                GroupsEditPanel groupsinput=new GroupsEditPanel(group);
 
                 int resultStudents = JOptionPane.showConfirmDialog(null, groupsinput,
                         "Update Group Information", JOptionPane.OK_CANCEL_OPTION);
@@ -88,16 +111,13 @@ public class UpdatePanel extends JPanel {
         }
     }
 
-    private void updateGrade(JTextArea textArea) {
+    private void updateGrade(JTextArea textArea) throws DaoException {
         String codeGrade = JOptionPane.showInputDialog("Enter Code Grade:");
         if (codeGrade != null && !codeGrade.isEmpty()) {
             Grades grades = fetchGradeByCode(codeGrade);
 
             if (grades != null) {
-                Grades gradesinput = new Grades();
-                gradesinput.setCode_Grade(grades.getCode_Grade());
-                gradesinput.setSemester_Grade(grades.getSemester_Grade());
-                gradesinput.setStudents(grades.getStudents());
+                GradesEditPanel gradesinput=new GradesEditPanel(grades);
 
                 int resultStudents = JOptionPane.showConfirmDialog(null, gradesinput,
                         "Update Grade Information", JOptionPane.OK_CANCEL_OPTION);
@@ -110,28 +130,17 @@ public class UpdatePanel extends JPanel {
         }
     }
 
-    private Students fetchStudentByCode(String codeStudent) {
+    private Students fetchStudentByCode(String codeStudent) throws DaoException {
+        return studentsDAO.findByCode(codeStudent);
 
-        Students student = new Students();
-        student.setCode_Student(codeStudent);
-        student.setName("John");
-        student.setSurname("Doe");
-        return student;
     }
-    private Groups fetchGroupByCode(String Code) {
-        Groups groups=new Groups();
-        groups.setName("");
-        groups.setCode_Group("");
-        return groups;
-    }
-    private Grades fetchGradeByCode(String Code) {
-        Grades grades=new Grades();
-        Students students=new Students();
-       grades.setStudents(students);
-        grades.setCode_Grade("");
-        grades.setSemester_Grade(8);
+    private Groups fetchGroupByCode(String Code) throws DaoException {
 
-        return grades;
+        return groupsDAO.findByCode(Code);
+    }
+    private Grades fetchGradeByCode(String Code) throws DaoException {
+
+        return gradesDAO.findByCode(Code);
     }
 
 }

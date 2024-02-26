@@ -39,22 +39,25 @@ public class StudentsDAOImpl implements StudentsDAO {
     public void update(String code, Students entity) throws DaoException {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Students students = session.bySimpleNaturalId(Students.class)
+            Students studentToUpdate = session.bySimpleNaturalId(Students.class)
                     .load(code);
-            entity.getGroups().setId(students.getGroups().getId());
+            studentToUpdate.setGroups(entity.getGroups());
+            studentToUpdate.setName(entity.getName());
+            studentToUpdate.setSurname(entity.getSurname());
 
             try {
-                students.setGroups(entity.getGroups());
-                students.setName(entity.getName());
-                students.setSurname(entity.getSurname());
-                students.setCode_Student(entity.getCode_Student());
-                session.merge(students);
+                session.merge(studentToUpdate);
                 session.getTransaction().commit();
             } catch (HibernateException e) {
-                throw new RuntimeException(e);
+                session.getTransaction().rollback();
+                throw new DaoException("Error updating student: " + e.getMessage(), e);
             }
+        } catch (HibernateException e) {
+            throw new DaoException("Error updating student: " + e.getMessage(), e);
         }
     }
+
+
 
     @Override
     public void delete(String code) throws DaoException {
@@ -74,7 +77,7 @@ public class StudentsDAOImpl implements StudentsDAO {
     public void insert(Students entity) throws DaoException {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            session.persist(entity);
+            session.save(entity);
             session.getTransaction().commit();
         } catch (HibernateException e) {
             throw new RuntimeException(e);

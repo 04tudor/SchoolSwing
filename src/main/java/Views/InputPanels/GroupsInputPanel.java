@@ -30,7 +30,6 @@ public class GroupsInputPanel extends JPanel {
     public Groups getGroupFromInput() {
         String code = codeField.getText();
         String name = nameField.getText();
-
         Groups group = new Groups(1, code, name);
         return group;
     }

@@ -17,7 +17,7 @@ public class Grades {
     @NaturalId
     @Column(name = "Code_Grade")
     private String code_Grade;
-    @OneToOne()
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "Student_ID")
     private Students students;
     @Column(name = "Semester_Grade")

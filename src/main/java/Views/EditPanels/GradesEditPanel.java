@@ -1,22 +1,23 @@
-package Views.InputPanels;
+package Views.EditPanels;
 
 import Models.DAO.DaoException;
 import Models.DAO.EntityInterfaces.StudentsDAO;
 import Models.DAO.Implementation.StudentsDAOImpl;
 import Models.Grades;
-import Models.Groups;
 import Models.Students;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public class GradesInputPanel extends JPanel {
+public class GradesEditPanel extends JPanel {
     private JTextField codeField;
     private JTextField semesterGradeField;
     private JComboBox<String> studentIdComboBox;
+    private Grades grades;
     private final StudentsDAO studentsDAO;
-    public GradesInputPanel() {
+    public GradesEditPanel(Grades grades){
+        this.grades=grades;
         studentsDAO=new StudentsDAOImpl();
         setLayout(new GridLayout(4, 2));
 
@@ -47,18 +48,19 @@ public class GradesInputPanel extends JPanel {
             e.printStackTrace();
         }
     }
+    private void updateGrade() throws DaoException {
+        String stCode = (String) studentIdComboBox.getSelectedItem();
+        Students students = studentsDAO.findByCode(stCode);
+        grades.setStudents(students);
+        grades.setSemester_Grade(Double.parseDouble(semesterGradeField.getText()));
+        grades.setCode_Grade(codeField.getText());
 
-    public Grades getGradesFromInput() throws DaoException {
-        String code = codeField.getText();
-        String codeStudent= (String) studentIdComboBox.getSelectedItem();
-        Students st=studentsDAO.findByCode(codeStudent);
-        double semesterGrade = Double.parseDouble(semesterGradeField.getText());
-
-        Grades grades = new Grades();
-        grades.setCode_Grade(code);
-        grades.setStudents(st);
-        grades.setSemester_Grade(semesterGrade);
-
-        return grades;
+        try {
+            studentsDAO.update(codeField.getText(),students);
+            JOptionPane.showMessageDialog(null, "Grade updated successfully");
+        } catch (DaoException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error updating Grade: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

@@ -78,7 +78,7 @@ public class GroupsDAOImpl implements GroupsDAO {
     public void insert(Groups entity) throws DaoException {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            session.persist(entity);
+            session.save(entity);
             session.getTransaction().commit();
         } catch (HibernateException e) {
             throw new RuntimeException(e);
