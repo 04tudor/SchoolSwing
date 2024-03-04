@@ -4,7 +4,6 @@ import Models.DAO.DaoException;
 import Models.DAO.EntityInterfaces.StudentsDAO;
 import Models.DAO.Implementation.StudentsDAOImpl;
 import Models.Grades;
-import Models.Groups;
 import Models.Students;
 
 import javax.swing.*;
@@ -56,7 +55,7 @@ public class GradesInputPanel extends JPanel {
 
         Grades grades = new Grades();
         grades.setCode_Grade(code);
-        grades.setStudents(st);
+        grades.setStudent(st);
         grades.setSemester_Grade(semesterGrade);
 
         return grades;

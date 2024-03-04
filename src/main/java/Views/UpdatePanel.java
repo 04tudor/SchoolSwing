@@ -81,8 +81,7 @@ public class UpdatePanel extends JPanel {
                 int result = JOptionPane.showConfirmDialog(null, studentsEditPanel,
                         "Update Student Information", JOptionPane.OK_CANCEL_OPTION);
                 if (result == JOptionPane.OK_OPTION) {
-                    Students updatedStudent = studentsEditPanel.getupdatedStudent();
-                    studentsDAO.update(codeStudent, updatedStudent);
+                    Students updatedStudent = studentsEditPanel.getUpdatedStudent();
                     textArea.append("Student updated: " + updatedStudent.toString() + "\n");
                 }
             } else {
@@ -103,7 +102,8 @@ public class UpdatePanel extends JPanel {
                 int resultStudents = JOptionPane.showConfirmDialog(null, groupsinput,
                         "Update Group Information", JOptionPane.OK_CANCEL_OPTION);
                 if (resultStudents == JOptionPane.OK_OPTION) {
-                    textArea.append("Group updated: " + groupsinput.toString() + "\n");
+                    Groups groups=groupsinput.getUpdatedGroup();
+                    textArea.append("Group updated: " + groups.toString() + "\n");
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "Group not found!");

@@ -25,6 +25,7 @@ public class StudentsEditPanel extends JPanel {
     private JComboBox<String> groupComboBox;
     private final GroupsDAO groupsDAO;
     private final StudentsDAO studentsDAO;
+    private Students updatedStudents;
     public StudentsEditPanel(Students students){
         this.students=students;
         studentsDAO=new StudentsDAOImpl();
@@ -82,11 +83,9 @@ public class StudentsEditPanel extends JPanel {
         }
         return null;
     }
-    public Students getupdatedStudent(){
-        String iidname=(String) groupComboBox.getSelectedItem();
-        Groups groups=findGroupByName(iidname);
-        Students students=new Students(1,codeField.getText(),nameField.getText(),surnameField.getText(),groups);
-        return students;
+    public Students getUpdatedStudent() {
+        updateStudent();
+        return updatedStudents;
     }
     private void updateStudent() {
         String groupName = (String) groupComboBox.getSelectedItem();
@@ -94,14 +93,19 @@ public class StudentsEditPanel extends JPanel {
         students.setCode_Student(codeField.getText());
         students.setName(nameField.getText());
         students.setSurname(surnameField.getText());
-        students.setGroups(group);
-
+        students.setGroup(group);
+        updatedStudents = new Students(); // Create a new instance
+        updatedStudents.setCode_Student(students.getCode_Student());
+        updatedStudents.setName(students.getName());
+        updatedStudents.setSurname(students.getSurname());
+        updatedStudents.setGroup(students.getGroup());
         try {
-            studentsDAO.update(codeField.getText(),students);
+            studentsDAO.update(codeField.getText(), updatedStudents);
             JOptionPane.showMessageDialog(null, "Student updated successfully");
         } catch (DaoException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error updating student: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 }

@@ -17,9 +17,9 @@ public class Grades {
     @NaturalId
     @Column(name = "Code_Grade")
     private String code_Grade;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "Student_ID")
-    private Students students;
+    @OneToOne
+    @JoinColumn(name = "Student_ID", referencedColumnName = "ID")
+    private Students student;
     @Column(name = "Semester_Grade")
     private double semester_Grade;
 
@@ -28,7 +28,7 @@ public class Grades {
         return "Grades{" +
                 "id=" + id +
                 ", code_Grade='" + code_Grade + '\'' +
-                ", students=" + students +
+                ", students=" + student +
                 ", semester_Grade=" + semester_Grade +
                 '}';
     }

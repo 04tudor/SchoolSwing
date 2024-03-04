@@ -1,6 +1,5 @@
 package Views.InputPanels;
 
-
 import Models.Groups;
 
 import javax.swing.*;
@@ -13,13 +12,11 @@ public class GroupsInputPanel extends JPanel {
     public GroupsInputPanel() {
         setLayout(new GridLayout(3, 2));
 
-
         JLabel codeLabel = new JLabel("Code_Group:");
         codeField = new JTextField(10);
 
         JLabel nameLabel = new JLabel("Name:");
         nameField = new JTextField(10);
-
 
         add(codeLabel);
         add(codeField);
@@ -30,7 +27,9 @@ public class GroupsInputPanel extends JPanel {
     public Groups getGroupFromInput() {
         String code = codeField.getText();
         String name = nameField.getText();
-        Groups group = new Groups(1, code, name);
+        Groups group = new Groups();
+        group.setCode_Group(code);
+        group.setName(name);
         return group;
     }
 }

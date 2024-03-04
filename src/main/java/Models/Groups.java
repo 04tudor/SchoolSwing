@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.NaturalId;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
@@ -20,6 +22,7 @@ public class Groups {
     private String code_Group;
     @Column(name = "Name")
     private String name;
+
     @Override
     public String toString() {
         return "Groups{" +

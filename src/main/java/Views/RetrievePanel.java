@@ -82,21 +82,17 @@ public class RetrievePanel extends JPanel {
     }
     private void displayStudentsData(List<Students> studentsList) {
         DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("ID");
         model.addColumn("Code");
         model.addColumn("Name");
         model.addColumn("Surname");
-        model.addColumn("Group_ID");
         model.addColumn("Group");
 
         for (Students student : studentsList) {
             Object[] rowData = {
-                    student.getId(),
                     student.getCode_Student(),
                     student.getName(),
                     student.getSurname(),
-                    student.getGroups().getId(),
-                    student.getGroups().getName()
+                    student.getGroup().getName()
             };
             model.addRow(rowData);
         }
@@ -105,14 +101,12 @@ public class RetrievePanel extends JPanel {
     }
     private void displayGroupsData(List<Groups> groupsList) {
         DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("ID");
-        model.addColumn("Group_ID");
+        model.addColumn("Group Code");
         model.addColumn("Name");
 
 
         for (Groups groups : groupsList) {
             Object[] rowData = {
-                    groups.getId(),
                     groups.getCode_Group(),
                     groups.getName(),
 
@@ -124,23 +118,20 @@ public class RetrievePanel extends JPanel {
     }
     private void displayGradesData(List<Grades> gradesList) {
         DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("ID");
-        model.addColumn("Group_ID");
-        model.addColumn("Semester Grade");
         model.addColumn("Code Student");
         model.addColumn("Name");
         model.addColumn("Surname");
         model.addColumn("Group");
+        model.addColumn("Semester Grade");
+
 
         for (Grades grades : gradesList) {
             Object[] rowData = {
-                    grades.getId(),
-                    grades.getCode_Grade(),
-                    grades.getSemester_Grade(),
-                    grades.getStudents().getCode_Student(),
-                    grades.getStudents().getName(),
-                    grades.getStudents().getSurname(),
-                    grades.getStudents().getGroups().getName(),
+                    grades.getStudent().getCode_Student(),
+                    grades.getStudent().getName(),
+                    grades.getStudent().getSurname(),
+                    grades.getStudent().getGroup().getName(),
+                    grades.getSemester_Grade()
 
             };
             model.addRow(rowData);

@@ -21,9 +21,11 @@ public class Students {
     private String name;
     @Column(name = "Surname")
     private String surname;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "Group_ID")
-    private Groups groups;
+    private Groups group;
+
+
     @Override
     public String toString() {
         return "Students{" +
@@ -31,7 +33,7 @@ public class Students {
                 ", code_Student='" + code_Student + '\'' +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
-                ", groups=" + groups +
+                ", groups=" + group +
                 '}';
     }
 }

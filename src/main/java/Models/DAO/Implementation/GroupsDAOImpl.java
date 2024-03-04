@@ -5,6 +5,7 @@ package Models.DAO.Implementation;
 
 import Models.DAO.DaoException;
 import Models.DAO.EntityInterfaces.GroupsDAO;
+import Models.Grades;
 import Models.Groups;
 import Models.Hibernate.HibernateUtil;
 import Models.Students;
@@ -45,18 +46,19 @@ public class GroupsDAOImpl implements GroupsDAO {
     public void update(String code, Groups entity) throws DaoException {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Groups groups = session.bySimpleNaturalId(Groups.class)
-                    .load(code);
+            Groups groupToUpdate = session.bySimpleNaturalId(Groups.class).load(code);
+            groupToUpdate.setCode_Group(entity.getCode_Group());
+            groupToUpdate.setName(entity.getName());
 
             try {
-                groups.setCode_Group(entity.getCode_Group());
-                groups.setName(entity.getName());
-
-                session.merge(groups);
+                session.merge(groupToUpdate);
                 session.getTransaction().commit();
             } catch (HibernateException e) {
-                throw new RuntimeException(e);
+                session.getTransaction().rollback();
+                throw new DaoException("Error updating group: " + e.getMessage(), e);
             }
+        } catch (HibernateException e) {
+            throw new DaoException("Error updating group: " + e.getMessage(), e);
         }
     }
 
@@ -65,14 +67,19 @@ public class GroupsDAOImpl implements GroupsDAO {
         try (Session session = sessionFactory.openSession()) {
             Groups groups = session.bySimpleNaturalId(Groups.class)
                     .load(code);
-            session.beginTransaction();
-            session.evict(groups);
-            session.remove(groups);
-            session.getTransaction().commit();
+            if (groups != null) {
+                session.beginTransaction();
+                session.evict(groups);
+                session.remove(groups);
+                session.getTransaction().commit();
+            } else {
+                throw new DaoException("Group with code " + code + " does not exist");
+            }
         } catch (HibernateException e) {
-            throw new RuntimeException(e);
+            throw new DaoException("Error deleting group with code: " + code, e);
         }
     }
+
 
     @Override
     public void insert(Groups entity) throws DaoException {
@@ -81,7 +88,7 @@ public class GroupsDAOImpl implements GroupsDAO {
             session.save(entity);
             session.getTransaction().commit();
         } catch (HibernateException e) {
-            throw new RuntimeException(e);
+            throw new DaoException("Error inserting group: " + e.getMessage(), e);
         }
     }
 

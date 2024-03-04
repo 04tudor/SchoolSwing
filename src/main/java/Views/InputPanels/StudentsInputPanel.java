@@ -82,7 +82,7 @@ public class StudentsInputPanel extends JPanel {
         student.setCode_Student(code);
         student.setName(name);
         student.setSurname(surname);
-        student.setGroups(selectedGroup);
+        student.setGroup(selectedGroup);
 
         return student;
     }

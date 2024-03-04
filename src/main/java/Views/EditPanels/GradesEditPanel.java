@@ -51,7 +51,7 @@ public class GradesEditPanel extends JPanel {
     private void updateGrade() throws DaoException {
         String stCode = (String) studentIdComboBox.getSelectedItem();
         Students students = studentsDAO.findByCode(stCode);
-        grades.setStudents(students);
+        grades.setStudent(students);
         grades.setSemester_Grade(Double.parseDouble(semesterGradeField.getText()));
         grades.setCode_Grade(codeField.getText());
 

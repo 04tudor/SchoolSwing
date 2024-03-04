@@ -2,6 +2,7 @@ package Models.DAO.Implementation;
 
 import Models.DAO.DaoException;
 import Models.DAO.EntityInterfaces.StudentsDAO;
+import Models.Grades;
 import Models.Hibernate.HibernateUtil;
 import Models.Students;
 import org.hibernate.HibernateException;
@@ -34,23 +35,23 @@ public class StudentsDAOImpl implements StudentsDAO {
                     .load(code);
         }
     }
-
     @Override
     public void update(String code, Students entity) throws DaoException {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            Students studentToUpdate = session.bySimpleNaturalId(Students.class)
-                    .load(code);
-            studentToUpdate.setGroups(entity.getGroups());
-            studentToUpdate.setName(entity.getName());
-            studentToUpdate.setSurname(entity.getSurname());
-
-            try {
-                session.merge(studentToUpdate);
-                session.getTransaction().commit();
-            } catch (HibernateException e) {
-                session.getTransaction().rollback();
-                throw new DaoException("Error updating student: " + e.getMessage(), e);
+            Students studentToUpdate = session.bySimpleNaturalId(Students.class).load(code);
+            if (studentToUpdate != null) {
+                if (entity != null) {
+                    studentToUpdate.setName(entity.getName());
+                    studentToUpdate.setSurname(entity.getSurname());
+                    studentToUpdate.setGroup(entity.getGroup());
+                    session.merge(studentToUpdate);
+                    session.getTransaction().commit();
+                } else {
+                    throw new DaoException("Error: Cannot update student with null entity");
+                }
+            } else {
+                throw new DaoException("Error: Student with code " + code + " does not exist");
             }
         } catch (HibernateException e) {
             throw new DaoException("Error updating student: " + e.getMessage(), e);
@@ -64,14 +65,19 @@ public class StudentsDAOImpl implements StudentsDAO {
         try (Session session = sessionFactory.openSession()) {
             Students students = session.bySimpleNaturalId(Students.class)
                     .load(code);
-            session.beginTransaction();
-            session.evict(students);
-            session.remove(students);
-            session.getTransaction().commit();
+            if (students != null) {
+                session.beginTransaction();
+                session.evict(students);
+                session.remove(students);
+                session.getTransaction().commit();
+            } else {
+                throw new DaoException("Student with code " + code + " does not exist");
+            }
         } catch (HibernateException e) {
-            throw new RuntimeException(e);
+            throw new DaoException("Error deleting student with code: " + code, e);
         }
     }
+
 
     @Override
     public void insert(Students entity) throws DaoException {
